@@ -19,8 +19,8 @@ Simulink Tutorials:
 - PID Controls Overview (His descriptions have more details on every topic): https://www.mathworks.com/videos/understanding-pid-control-part-1-what-is-pid-control--1527089264373.html?s_tid=vid_pers_recs
 - Arduino Code for PID Control (This guy's channel has a ton of resources): https://www.youtube.com/watch?v=4cw9K9yuIyU
 
-Math Behind TVC: 
-- 
-
 Other Resources: 
 - TVC Modelling Repo in Simulink: https://www.mathworks.com/matlabcentral/fileexchange/80716-modeling-a-thrust-vector-controlled-rocket-in-simulink
+
+Math Behind TVC:
+- 
