@@ -1,2 +1,30 @@
 # What kind of system are we working with: 
- 1. 
+ 1. Non-Linear 
+ 2. Minimum Delay 
+ 3. Closed Loop System
+ 4. Requirements: Reduce Windup Error, Cascading PID Control, Variant Subsystem Heirarchy
+#
+
+# PID Values Calculation:
+  P --> 
+  I --> 
+  D -->
+#
+
+# Pre-Launch Requirements
+  1. Check Communication with Flight Computer
+  2. Check that there is power to all components
+  3. Sensors are fucntioning 
+  4. Launch Commands cued
+#
+
+# Powered Flight
+  1. Sensor Feedback: altitude, velocity, acceleration 
+  2. PID Tuning based on wind + other disturbances
+#
+
+# Parachute Flight
+  1. Determining Statement that deploys parachute
+  2. Sensors used to determine it's descent path + potential landing point
+# 
+
