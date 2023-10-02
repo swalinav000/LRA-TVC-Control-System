@@ -23,5 +23,5 @@ Other Resources:
 - TVC Modelling Repo in Simulink: https://www.mathworks.com/matlabcentral/fileexchange/80716-modeling-a-thrust-vector-controlled-rocket-in-simulink
 
 Math Behind TVC:
-- dfasdbfhbsf
+- TBD
 
