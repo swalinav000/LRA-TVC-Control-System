@@ -3,6 +3,7 @@
  2. Minimum Delay 
  3. Closed Loop System
  4. Requirements: Reduce Windup Error, Cascading PID Control, Variant Subsystem Heirarchy
+[raghav's changes here, i'll write mostly in psuedo code/python just to express my ideas]
 #
 
 # PID Values Calculation:
