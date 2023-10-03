@@ -1,14 +1,16 @@
 # What kind of system are we working with: 
- 1. Non-Linear 
+ 1. Non-Linear [linearized system, adjust via inertia stuff
  2. Minimum Delay 
  3. Closed Loop System
  4. Requirements: Reduce Windup Error, Cascading PID Control, Variant Subsystem Heirarchy
+[raghav's edits-unreliable af-i'll write in psuedo code just to express idea]
 #
 
 # PID Values Calculation:
   P --> 
   I --> 
   D -->
+[will figure out via the advanced tuning method or simulink]
 #
 
 # Pre-Launch Requirements
@@ -16,15 +18,44 @@
   2. Check that there is power to all components
   3. Sensors are fucntioning 
   4. Launch Commands cued
+[we put this in the setup part of the code right?
+we just run conditions/check the feedback]
 #
 
 # Powered Flight
   1. Sensor Feedback: altitude, velocity, acceleration 
   2. PID Tuning based on wind + other disturbances
+[Variables calculations we need
+altitude- we take barometer reading and use the equation in notes to convert(only mainly needed for parachute deployment so its not that deep
+acceleration - straight from imu
+velocity - derivative of acceleration(can take tiny time steps like 10ms and track a at each value and do += at, each time, effectively doing a
+rieman sum to approximate velocity
+roll - the gyroscope should give the data across 3 axis, one of which will align with the rocket so it should be direct here
+nose cone angle - we'd have to integrate the values we get from gyroscope(like velocity)
+gimbal angle - this would be what we send to the actuators that gimbal. 
+time - i'm assuming the computer alr tracks this?
+Inertia - as a function of time, gotta figure this out before hand
+]
 #
 
 # Parachute Flight
   1. Determining Statement that deploys parachute
   2. Sensors used to determine it's descent path + potential landing point
+[I don't think we use sensors to make a decent path back, i think it's just releasing the parachute on the massive field
+the determining condition is prob(if rocket altitude goes down for half a second + the acceleration is less than 20 m/s to make sure
+it doesn't prematurely fire while the rocket is going
+]
 # 
+
+#
+[actual code sections:
+1.we need code to do all the variable calculations, make them save as global variables
+2.Reaction Wheel PI control
+3.Gimbal Pi control that ignores the change in inertia
+4.The convertion of that into the proper value accounting for intertia(equations on the ppt for dcr)
+5.Converting that gimbal pi control output into values for the actuators/rotation wheel thingies or whatever 
+6.checking for parachute condition values 
+I think that's it but I probably missed smth
+]
+#
 
