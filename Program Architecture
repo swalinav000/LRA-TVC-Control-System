@@ -2,15 +2,16 @@
  1. Non-Linear [linearized system, adjust via inertia stuff
  2. Minimum Delay 
  3. Closed Loop System
- 4. Requirements: Reduce Windup Error, Cascading PID Control, Variant Subsystem Heirarchy
-[raghav's edits-unreliable af-i'll write in psuedo code just to express idea]
+ 4. Requirements: Reduce Windup Error, Cascading PID Control, Variant Subsystem Heirarchy 
+[this last one is mostly to model in simulink, doesnt affect code]
+[raghav's edits in brackets btw-unreliable af-i'll write in psuedo code just to express idea]
 #
 
 # PID Values Calculation:
   P --> 
   I --> 
   D -->
-[will figure out via the advanced tuning method or simulink]
+[will figure out via the advanced tuning method and/or simulink]
 #
 
 # Pre-Launch Requirements
@@ -19,22 +20,33 @@
   3. Sensors are fucntioning 
   4. Launch Commands cued
 [we put this in the setup part of the code right?
-we just run conditions/check the feedback]
+we just run conditions/check the feedback
+a bunch of if commands that make sure the signal isn't null with each of the sensors?]
 #
 
 # Powered Flight
   1. Sensor Feedback: altitude, velocity, acceleration 
   2. PID Tuning based on wind + other disturbances
 [Variables calculations we need
-altitude- we take barometer reading and use the equation in notes to convert(only mainly needed for parachute deployment so its not that deep
+*the values from the sensors are gonna be broken down, so it's not at straightforward as calling the value but it still shouldn't be that bad, ez 
+to look up*
+altitude- we take barometer reading and use the equation in notes to convert(only mainly needed for parachute deployment so its not that deep)
+altitude = 44330*[1-(pressure/1013.25)^(1/5.225)
+https://www.youtube.com/watch?v=rabWc5W84ug  - video tutorial 
 acceleration - straight from imu
 velocity - derivative of acceleration(can take tiny time steps like 10ms and track a at each value and do += at, each time, effectively doing a
 rieman sum to approximate velocity
+*in the loop every 10 ms
+v += a*.01
 roll - the gyroscope should give the data across 3 axis, one of which will align with the rocket so it should be direct here
-nose cone angle - we'd have to integrate the values we get from gyroscope(like velocity)
+nose cone angle - we'd have to integrate the values we get from gyroscope(like velocity) 
+***we can split this across x and y axis that aligns with our motors so we can process them seperately (seperate PIDs with same code)***
+Nose_cone_angle_X = angular_velocity_x* .01 (same with y after)
 gimbal angle - this would be what we send to the actuators that gimbal. 
+output from the PI control system to the actuators
 time - i'm assuming the computer alr tracks this?
 Inertia - as a function of time, gotta figure this out before hand
+Must calculate before hand(looking at burn rate for engine, find burn rate for our engine)
 ]
 #
 
@@ -44,17 +56,52 @@ Inertia - as a function of time, gotta figure this out before hand
 [I don't think we use sensors to make a decent path back, i think it's just releasing the parachute on the massive field
 the determining condition is prob(if rocket altitude goes down for half a second + the acceleration is less than 20 m/s to make sure
 it doesn't prematurely fire while the rocket is going
+*maybe check every half second
+*we can have 2 checkpoints in case something malfunctions
+if velocity <= 0 and acceleration <= 20:
+  deploy parchute 
+else if altitude < (altitude 1 second ago) and acceleration <=20:
+  deply parachute
 ]
 # 
 
 #
 [actual code sections:
 1.we need code to do all the variable calculations, make them save as global variables
+     Listed above 
 2.Reaction Wheel PI control
+     //error is the roll value from gyroscope
+     double pid(double error)
+     {
+       double proportional = error;
+       integral += error * dt;
+       double output = (kp * proportional) + (ki * integral);
+       if output > critical value:
+          output = critical value;
+          integral -= error * dt;
+       //this is just to prevent windup. We get it to stop integrating so the value doesn't increase further past a critical point
+       //can prob make this more efficient but still is kinda the starting point 
+       return output;
+     }
+
 3.Gimbal Pi control that ignores the change in inertia
+      same thing as reaction wheel basically, except error = angle in the direction we care about(x/y)
+
 4.The convertion of that into the proper value accounting for intertia(equations on the ppt for dcr)
+   double convertion(θpid)
+   {
+      τpid = rFsin(θpid);     
+      αdesired = τpid/Ipid;
+      αdesired * I(t) = τdesired;
+      τfinal = τdesired - τgravity; 
+      θfinal = sin^-1(τfinal/rF);
+      return θfinal;
+    }
+
 5.Converting that gimbal pi control output into values for the actuators/rotation wheel thingies or whatever 
+    if it's a rotation wheel thingy, we can basically directly feed in the angle and it should rotate
 6.checking for parachute condition values 
+    code is above
 I think that's it but I probably missed smth
 ]
 #
