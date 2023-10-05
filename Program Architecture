@@ -5,6 +5,8 @@
  4. Requirements: Reduce Windup Error, Cascading PID Control, Variant Subsystem Heirarchy 
 [this last one is mostly to model in simulink, doesnt affect code]
 [raghav's edits in brackets btw-unreliable af-i'll write in psuedo code just to express idea]
+{navya's pseudocode}
+{We NEED to account for redundancy + emergency deployment of parachutes + edge cases}
 #
 
 # PID Values Calculation:
@@ -22,6 +24,10 @@
 [we put this in the setup part of the code right?
 we just run conditions/check the feedback
 a bunch of if commands that make sure the signal isn't null with each of the sensors?]
+{This part of the code would be more asking all the systems to return data before laucnh/blink the signal lights that indicate that they are in fact working.
+and then we have to write a command sequence for what happens when we give the rocket the green light to go (we have to figure out what real time interfacing 
+with the rocket is going to look like / if we are going to have to design a UI to communicate with the rocket so we can get data on it right before + when we press
+launch + while it's in the air}
 #
 
 # Powered Flight
@@ -34,35 +40,42 @@ altitude- we take barometer reading and use the equation in notes to convert(onl
 altitude = 44330*[1-(pressure/1013.25)^(1/5.225)
 https://www.youtube.com/watch?v=rabWc5W84ug  - video tutorial 
 acceleration - straight from imu
-velocity - derivative of acceleration(can take tiny time steps like 10ms and track a at each value and do += at, each time, effectively doing a
+velocity - {shouldn't it be the integral of acceleration ? } derivative of acceleration(can take tiny time steps like 10ms and track a at each value and do += at, each time, effectively doing a
 rieman sum to approximate velocity
 *in the loop every 10 ms
 v += a*.01
 roll - the gyroscope should give the data across 3 axis, one of which will align with the rocket so it should be direct here
-nose cone angle - we'd have to integrate the values we get from gyroscope(like velocity) 
-***we can split this across x and y axis that aligns with our motors so we can process them seperately (seperate PIDs with same code)***
+nose cone angle - we'd have to integrate the values we get from gyroscope(like velocity) {Probably going to end up being the Vxz or Vxy value} 
+***we can split this across x and y axis that aligns with our motors so we can process them seperately (seperate PIDs with same code)*** {I'm not sure this would 
+be necessary cause the nose cone angle is the roll value across the x/y axis with respect to the z axis}
+{https://www.instructables.com/Accelerometer-Gyro-Tutorial/ --> this article details how to convert accelerometer and gyro values into something that we 
+can work with. Also depending on the physical position of the gyro and the accelerometer we have to determine if the outputs for the gyro have to be inverted}
 Nose_cone_angle_X = angular_velocity_x* .01 (same with y after)
 gimbal angle - this would be what we send to the actuators that gimbal. 
 output from the PI control system to the actuators
-time - i'm assuming the computer alr tracks this?
-Inertia - as a function of time, gotta figure this out before hand
+{We need to write code that determine the angle of the nozzle from actuator position -->
+feeds it into PID --> PID outputs angle --> we turn angle into actuator outputs}
+time - i'm assuming the computer alr tracks this? {Most likely --> definitely something I need to look into for Teensy functions}
+Inertia - as a function of time, gotta figure this out before hand 
 Must calculate before hand(looking at burn rate for engine, find burn rate for our engine)
 ]
 #
 
 # Parachute Flight
   1. Determining Statement that deploys parachute
-  2. Sensors used to determine it's descent path + potential landing point
+  2. Sensors used to determine it's descent path + potential landing point {Sensors will just tell us where to expect it for recovery (not to plan descent path)
+  Because we will plan approx. descent path beforehand}
 [I don't think we use sensors to make a decent path back, i think it's just releasing the parachute on the massive field
 the determining condition is prob(if rocket altitude goes down for half a second + the acceleration is less than 20 m/s to make sure
 it doesn't prematurely fire while the rocket is going
 *maybe check every half second
 *we can have 2 checkpoints in case something malfunctions
 if velocity <= 0 and acceleration <= 20:
-  deploy parchute 
+  deploy parchute
 else if altitude < (altitude 1 second ago) and acceleration <=20:
   deply parachute
 ]
+{I think it should be based off of our altitude and we calculate acceleration and velocity that the rocket should have at that altitude}
 # 
 
 #
@@ -71,6 +84,8 @@ else if altitude < (altitude 1 second ago) and acceleration <=20:
      Listed above 
 2.Reaction Wheel PI control
      //error is the roll value from gyroscope
+     {error should be the change in the angle abt the x and y axis with respect to z from the gyro (alternating x and y values should indicate this) --> depending
+      on how fast these values are changing we can determine rev/sec and output the counter to that}
      double pid(double error)
      {
        double proportional = error;
@@ -87,14 +102,14 @@ else if altitude < (altitude 1 second ago) and acceleration <=20:
 3.Gimbal Pi control that ignores the change in inertia
       same thing as reaction wheel basically, except error = angle in the direction we care about(x/y)
 
-4.The convertion of that into the proper value accounting for intertia(equations on the ppt for dcr)
-   double convertion(θpid)
+4.The conversion of that into the proper value accounting for inertia(equations on the ppt for dcr)
+   double conversion(θpid)
    {
-      τpid = rFsin(θpid);     
+      τpid = rFsin(θpid); {Force here is thrust at a given point)    
       αdesired = τpid/Ipid;
-      αdesired * I(t) = τdesired;
-      τfinal = τdesired - τgravity; 
-      θfinal = sin^-1(τfinal/rF);
+      αdesired * I(t) = τdesired; {This torque needs to be inverted to get the angle we need to coutneract the torque that has already rotated the rocket}
+      τfinal = τdesired - τgravity; {Shouldn't you add torque gravity cause gravity is technically contributing to the downards pull so we need to counter it too}
+      θfinal = sin^-1(τfinal/rF); {arcsin or 1/sin?}
       return θfinal;
     }
 
