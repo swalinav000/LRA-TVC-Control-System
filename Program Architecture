@@ -50,18 +50,25 @@ v += a*.01
 
 roll - the gyroscope should give the data across 3 axis, one of which will align with the rocket so it should be direct here
 we can measure this by finding roll in the xy plane, gives rotation along z axis, look at diagram in notes for more understanding, math is provided there too
+mind the dthete/dtime
+https://www.youtube.com/watch?v=ythjrfQViRQ
 
 nose cone angle - we'd have to integrate the values we get from gyroscope(like velocity) {Probably going to end up being the Vxz or Vxy value} 
 ***we can split this across x and y axis that aligns with our motors so we can process them seperately (seperate PIDs with same code)*** {I'm not sure this would 
 be necessary cause the nose cone angle is the roll value across the x/y axis with respect to the z axis}
+find the overall theta 
+https://www.youtube.com/watch?v=ythjrfQViRQ - should be the yaw and pitch angles. 
 {https://www.instructables.com/Accelerometer-Gyro-Tutorial/ --> this article details how to convert accelerometer and gyro values into something that we 
 can work with. Also depending on the physical position of the gyro and the accelerometer we have to determine if the outputs for the gyro have to be inverted}
 Nose_cone_angle_X = angular_velocity_x* .01 (same with y after)
+
 gimbal angle - this would be what we send to the actuators that gimbal. 
+this is the after affect of the PID controls 
 output from the PI control system to the actuators
 {We need to write code that determine the angle of the nozzle from actuator position -->
 feeds it into PID --> PID outputs angle --> we turn angle into actuator outputs}
 time - i'm assuming the computer alr tracks this? {Most likely --> definitely something I need to look into for Teensy functions}
+
 Inertia - as a function of time, gotta figure this out before hand 
 Must calculate before hand(looking at burn rate for engine, find burn rate for our engine)
 ]
