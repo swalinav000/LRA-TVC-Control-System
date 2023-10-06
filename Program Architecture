@@ -38,13 +38,19 @@ launch + while it's in the air}
 to look up*
 altitude- we take barometer reading and use the equation in notes to convert(only mainly needed for parachute deployment so its not that deep)
 altitude = 44330*[1-(pressure/1013.25)^(1/5.225)
-https://www.youtube.com/watch?v=rabWc5W84ug  - video tutorial 
+https://www.youtube.com/watch?v=rabWc5W84ug  - video tutorial
+
 acceleration - straight from imu
+https://randomnerdtutorials.com/arduino-mpu-6050-accelerometer-gyroscope/#:~:text=The%20MPU%2D6050%20measures%20acceleration,and%20pitch%20angles%20using%20trigonometry.
+
 velocity - {shouldn't it be the integral of acceleration ? } derivative of acceleration(can take tiny time steps like 10ms and track a at each value and do += at, each time, effectively doing a
 rieman sum to approximate velocity
 *in the loop every 10 ms
 v += a*.01
+
 roll - the gyroscope should give the data across 3 axis, one of which will align with the rocket so it should be direct here
+we can measure this by finding roll in the xy plane, gives rotation along z axis, look at diagram in notes for more understanding, math is provided there too
+
 nose cone angle - we'd have to integrate the values we get from gyroscope(like velocity) {Probably going to end up being the Vxz or Vxy value} 
 ***we can split this across x and y axis that aligns with our motors so we can process them seperately (seperate PIDs with same code)*** {I'm not sure this would 
 be necessary cause the nose cone angle is the roll value across the x/y axis with respect to the z axis}
