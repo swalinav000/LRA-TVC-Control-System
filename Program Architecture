@@ -76,6 +76,20 @@ Must calculate before hand(looking at burn rate for engine, find burn rate for o
 
 # Parachute Flight
   1. Determining Statement that deploys parachute
+
+*****************************************************
+boolean checkParachute(altitude, velocity, acceleration) {
+     boolean condition = false;
+     if(velocity <= 0 && acceleration <= 20) {
+         condition = true;
+     }
+     else if(altitude < prevaltitude && acceleration <= 20){
+         condition = true;
+     }
+     return condition;
+}
+*****************************************************
+
   2. Sensors used to determine it's descent path + potential landing point {Sensors will just tell us where to expect it for recovery (not to plan descent path)
   Because we will plan approx. descent path beforehand}
 [I don't think we use sensors to make a decent path back, i think it's just releasing the parachute on the massive field
@@ -91,10 +105,14 @@ else if altitude < (altitude 1 second ago) and acceleration <=20:
 {I think it should be based off of our altitude and we calculate acceleration and velocity that the rocket should have at that altitude}
 # 
 
+
+
+
 #
 [actual code sections:
 1.we need code to do all the variable calculations, make them save as global variables
      Listed above 
+
 2.Reaction Wheel PI control
      //error is the roll value from gyroscope
      {error should be the change in the angle abt the x and y axis with respect to z from the gyro (alternating x and y values should indicate this) --> depending
@@ -112,8 +130,33 @@ else if altitude < (altitude 1 second ago) and acceleration <=20:
        return output;
      }
 
+*****************************************************
+double pid(roll)
+{
+    proportional = roll;
+    if (output < critical value) 
+    {
+        integral += roll * dt;
+    }
+    output = (kp * proportional) + (ki * integral);
+}
+*****************************************************
+
 3.Gimbal Pi control that ignores the change in inertia
       same thing as reaction wheel basically, except error = angle in the direction we care about(x/y)
+
+*****************************************************
+//make the same thing with y
+double pid(θ_x)
+{
+    proportional_gimbal_x = θ_x;
+    if (output_gimbal_x < critical_value_gimbal) 
+    {
+        integral_gimbal_x += θ_x * dt;
+    }
+    output_x = (kp_gimbal * proportional_gimbal_x) + (ki_gimbal * integral_gimbal_x);
+}
+*****************************************************
 
 4.The conversion of that into the proper value accounting for inertia(equations on the ppt for dcr)
    double conversion(θpid)
@@ -126,8 +169,25 @@ else if altitude < (altitude 1 second ago) and acceleration <=20:
       return θfinal;
     }
 
+
+*****************************************************
+double conversion(θpid) 
+{
+    //have all the variables be defined globally at the start
+    τpid = r*F*sin(θpid); 
+    αdesired = τpid/Ipid;
+    αdesired * I(t) = τdesired; 
+    τfinal = τdesired - τgravity; 
+    θfinal = arcsin(τfinal/rF); 
+    return θfinal;
+}
+*****************************************************
+
+
 5.Converting that gimbal pi control output into values for the actuators/rotation wheel thingies or whatever 
     if it's a rotation wheel thingy, we can basically directly feed in the angle and it should rotate
+
+    
 6.checking for parachute condition values 
     code is above
 I think that's it but I probably missed smth
