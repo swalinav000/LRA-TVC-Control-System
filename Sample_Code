@@ -82,4 +82,19 @@ boolean checkParachute(altitude, velocity, acceleration) {
      }
      return condition;
 }
+
+//Gimbal Pi control that ignores the change in inertia
+      same thing as reaction wheel basically, except error = angle in the direction we care about(x/y)
+
+//make the same thing with y
+double pid(θ_x)
+{
+    proportional_gimbal_x = θ_x;
+    if (output_gimbal_x < critical_value_gimbal) 
+    {
+        integral_gimbal_x += θ_x * dt;
+    }
+    output_x = (kp_gimbal * proportional_gimbal_x) + (ki_gimbal * integral_gimbal_x);
+}
+
 // Add as you think of it
