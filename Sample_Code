@@ -9,7 +9,7 @@
 // MOSFET 
    
 // PID Calc
-
+needs physical values to fully run
 // Inertia 
-   ~ in progress
+done/needs checking
 // Add as you think of it
