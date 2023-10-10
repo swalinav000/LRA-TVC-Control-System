@@ -59,4 +59,16 @@ double pid(roll)
     }
     output = (kp * proportional) + (ki * integral);
 }
+
+//Pid output conversion
+double conversion(θpid) 
+{
+    //have all the variables be defined globally at the start
+    τpid = r*F*sin(θpid); 
+    αdesired = τpid/Ipid;
+    αdesired * I(t) = τdesired; 
+    τfinal = τdesired - τgravity; 
+    θfinal = arcsin(τfinal/rF); 
+    return θfinal;
+}
 // Add as you think of it
