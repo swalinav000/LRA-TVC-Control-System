@@ -50,5 +50,13 @@ double Inertia(time) {
 // Servos 
 
 // Reaction Wheel
-
+double pid(roll)
+{
+    proportional = roll;
+    if (output < critical value) 
+    {
+        integral += roll * dt;
+    }
+    output = (kp * proportional) + (ki * integral);
+}
 // Add as you think of it
