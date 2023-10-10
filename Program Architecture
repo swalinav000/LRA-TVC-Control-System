@@ -71,6 +71,43 @@ time - i'm assuming the computer alr tracks this? {Most likely --> definitely so
 
 Inertia - as a function of time, gotta figure this out before hand 
 Must calculate before hand(looking at burn rate for engine, find burn rate for our engine)
+
+*********
+//gets an input of time, depending on what that value is, calculates the percent of fuel
+//taken up and then multiplies that by the inertia difference and adds to the final 
+//this allows it to model the curve between the starting and ending inertia appropriately
+double Inertia(time) {
+   //time in ms
+   // check my math on this, I put the base equations in the notes
+   //Inertia_difference is the difference between initial and final inertia
+   //fuel fraction is the integral of the fuel used up, but it's not divided yet
+   //we have to do that at the end which is why it is divided by 961.8 at end
+   t = time/1000;
+   fuel_fraction = 0;
+   if t< .125 {
+       fuel_fraction =  166 * pow(t,2)-1300*(pow(t,3)/3+pow(t,2)/8+t/64; 
+   }
+   else if t < 2.125 {
+       fuel_fraction = 1015/4 * t - 15 * pow(t,2) + 3.8567708333;
+   }
+   else if t < 3.5 {
+       fuel_fraction = 51.271-t⋅(36t−1673)/8;
+   }
+   else if t < 5.4 {
+       fuel_fraction = -322.26 + 2113*t/5−35*pow(t,2);
+   }
+   else if t < 6.4 {
+       fuel_fraction = 56.813 + 223*t/5−44(pow(t,2)/2−27*t/5);
+   }
+   else {
+       fuel_fraction = 961.8
+   }
+
+   return Inertia_difference * fuel_fraction/961.8  + Final_inertia;
+}
+
+
+*********
 ]
 #
 
