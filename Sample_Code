@@ -9,7 +9,8 @@
 // MPU 6050/GY-521 IMU
    ~ in progress
 // MOSFET 
-   
+   ~from what I read, we don't need extra code for flash memory, we just need to include the library so we can 
+    use the read/write features. It'll just sorta play a role in when we right down the code for everything else. 
 // PID Calc
 needs physical values to fully run
 // Inertia 
@@ -48,6 +49,28 @@ double Inertia(time) {
 }
 
 // Servos 
+
+//initialize servo objects
+Servo servo_innerloop;
+Servo servo_outerloop;
+
+void setup() {
+   servo_innerloop.attach(pin # the servo is attached to)
+   servo_innerloop.write(angle that makes the computer horiontal) 
+   servo_outerloop.attach(pin # the servo is attached to)
+   servo_outerloop.write(angle that makes the computer horiontal) 
+   //ideally we'd want the servo's attached such that this angle is near the middle of the range
+}
+
+void loop() {
+   innerloop_val = PID(noseangle_x);
+   //we have to add the initial value, because the PID is tuned in such
+   //a way that the initial angle is 0 and it'll go + or - to switch directions
+   servo_innerloop.write(innerloop_val+initial value);
+   
+   outerloop_val = PID(noseangle_x);
+   servo_outerloop.write(outerloop_val+initial value);
+}
 
 // Reaction Wheel
 double pid(roll)
