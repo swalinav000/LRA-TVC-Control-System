@@ -130,7 +130,7 @@ double Inertia(time) {
        fuel_fraction = 961.8
    }
 
-   return Inertia_difference * fuel_fraction/961.8  + Final_inertia;
+   return Inertia_difference * fuel_fraction/961.8  + Initial_inertia;
 }
 
 // Servos 
