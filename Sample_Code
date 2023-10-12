@@ -1,33 +1,91 @@
 // Insert Code for different devices on here
 
 // BMP 388
-   For apogee: 
-pastAlt;
-alt;
-//set alt equal to current alt from sensor
-if (alt < pastAlt) {
-//in descent, switch to descent mode
-}
-pastAlt = alt;
-delay(1000);
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include "Adafruit_BMP3XX.h"
 
-   For descent:
-//update alt
-if (alt < chuteAlt) {
-//fire chutes
-//switch to under chutes
-}
+#define SEALEVELPRESSURE_HPA (1013.25) // Set to 
 
-   For landing
-int timeElp;
-if (alt < 5m) {
-   timeElp += 1;
-   if (timeElp >= 5) {
-      //on ground
+Adafruit_BMP3XX bmp;
+
+void setup() {
+
+   double pastAlt = 0;
+   int timeElp = 0;
+
+   serial.begin(//speed);
+   while (!Serial);
+
+   if (!bmp.begin_I2C) {
+      Serial.println("Could not find a valid BMP388 sensor, check wiring.");
+	   while (1);
    }
-} else {
-   timeElp = 0;
+
+   //set up functions for elimination of noise (can be adjusted)
+   bmp.setTemperatureOversampling(BMP3_OVERSAMPLING_8X);
+   bmp.setPressureOversampling(BMP3_OVERSAMPLING_4X);
+   bmp.setIIRFilterCoeff(BMP3_IIR_FILTER_COEFF_1);
+   //set max frequency of readings
+   bmp.setOutputDataRate(BMP3_ODR_100_HZ);
 }
+
+void loop() {
+
+if (!bmp.performReading()) {
+    Serial.println("Failed to perform reading");
+    return;
+  }
+
+Serial.print("Temperature = ");
+  Serial.print(bmp.temperature);
+  Serial.println(" *C");
+
+  Serial.print("Pressure = ");
+  Serial.print(bmp.pressure / 100.0);
+  Serial.println(" hPa");
+
+  Serial.print("Approx. Altitude = ");
+  Serial.print(bmp.readAltitude(SEALEVELPRESSURE_HPA));
+  Serial.println(" m");
+
+  Serial.println();
+  delay(1000);
+
+alt = bmp.readAltitude(SEALEVELPRESSURE_HPA);
+
+switch (state) {
+   case 1: //ready to launch
+      break;
+   case 2: //powered flight
+      break;
+   case 3: //unpowered flight
+      if (alt < pastAlt) {
+      case = 4;
+      }
+      pastAlt = alt;
+      delay(1000);
+      break;
+   case 4: //descent (no chutes)
+      if (alt < chuteAlt) {
+      //fire chutes
+      case = 5;
+      }
+      break;
+   case 5: //chutes
+      if (alt < 5m) {
+         timeElp += 1;
+         if (timeElp >= 5) {
+            //on ground
+         }
+      } else {
+         timeElp = 0;
+      }
+      break;
+   }      
+
+}
+
 
 // SD Card
    ~ in progress
