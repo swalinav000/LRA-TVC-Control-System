@@ -1,7 +1,34 @@
 // Insert Code for different devices on here
 
 // BMP 388
-   ~ in progress
+   For apogee: 
+pastAlt;
+alt;
+//set alt equal to current alt from sensor
+if (alt < pastAlt) {
+//in descent, switch to descent mode
+}
+pastAlt = alt;
+delay(1000);
+
+   For descent:
+//update alt
+if (alt < chuteAlt) {
+//fire chutes
+//switch to under chutes
+}
+
+   For landing
+int timeElp;
+if (alt < 5m) {
+   timeElp += 1;
+   if (timeElp >= 5) {
+      //on ground
+   }
+} else {
+   timeElp = 0;
+}
+
 // SD Card
    ~ in progress
    https://cdn-learn.adafruit.com/downloads/pdf/adafruit-micro-sd-breakout-board-card-tutorial.pdf -> might work because it's for the breakout board that we have
