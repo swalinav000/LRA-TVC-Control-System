@@ -1,1 +1,28 @@
+case 1: pre-launch
+  test every electronic system
+  calibrate 
+  *launch button 
 
+case 2: powered flight
+  PIDs 
+  servos   
+  imu 
+  bluetooth connection, ui output
+  *acceleration/time
+
+case 3: unpowered ascent
+  imu
+  altimeter
+  ui output
+  parchute conditions
+  *altitude/velocity
+  
+case 4: descent w parachute
+  gps
+  altimeter
+  UI output 
+  *altitude 
+
+case 5: on ground
+  gps
+  altimeter
