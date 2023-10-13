@@ -93,11 +93,18 @@ switch (state) {
    or maybe this https://forum.pjrc.com/threads/70142-External-SD-card-on-Teensy-4-1
 // MPU 6050/GY-521 IMU
    ~ in progress
+Basically we need to zero the gyro and then we need it to measure the angular velocity in the xy plane respect to it's zero. 
+WE also need to zero the accelerometer before we begin + intitializer the imu. 
+
 // MOSFET 
    ~from what I read, we don't need extra code for flash memory, we just need to include the library so we can 
     use the read/write features. It'll just sorta play a role in when we right down the code for everything else. 
+
+
 // PID Calc
 needs physical values to fully run
+
+
 // Inertia 
 done/needs checking
 //gets an input of time, depending on what that value is, calculates the percent of fuel
