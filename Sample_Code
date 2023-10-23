@@ -419,6 +419,18 @@ double conversion(θpid)
     θfinal = arcsin(τfinal/rF); 
     return θfinal;
 }
+
+double conversion(θpid_x) 
+{
+    //have all the variables be defined globally at the start
+    τpid = r*F*sin(θpid)*cos(y); 
+    αdesired = τpid/Ipid;
+    αdesired * I(t) = τdesired; 
+    τfinal = τdesired - τgravity; 
+    θfinal = arcsin(τfinal/rFcos(y)); 
+    return θfinal;
+}
+//
 //Parachute Checking Conditions
 boolean checkParachute(altitude, velocity, acceleration) {
      boolean condition = false;
