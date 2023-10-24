@@ -337,7 +337,6 @@ void loop() {
 // PID Calc
 needs physical values to fully run
 
-
 // Inertia 
 done/needs checking
 //gets an input of time, depending on what that value is, calculates the percent of fuel
@@ -372,7 +371,31 @@ double Inertia(time) {
 
    return Inertia_difference * fuel_fraction/961.8  + Initial_inertia;
 }
-
+//Also need to correct for the change in thrust
+double thrust(time){	
+	//time from ms to s
+	t = time/1000
+	thrust = 0
+	if t < .125{
+		thurst = -1300(t+.125)^2+330+2x
+	}
+	else if t < 2.125{ 
+	        thrust = 250 - 30(x-.125)
+	}
+	else if t < 3.5{ 
+		thrust = 290-9(x-2.125)
+	}
+	else if t < 5.4{ 
+		thrust = 177.6-70(x-3.5)
+	}
+	else if t < 6.4{ 
+		thrust = 44.6-44(x-5.4)
+	}
+	else{ 
+		thrust = 0
+	}
+return thrust
+}
 // Servos 
 
 //initialize servo objects
@@ -423,11 +446,12 @@ double conversion(θpid)
 double conversion(θpid_x) 
 {
     //have all the variables be defined globally at the start
-    τpid = r*F*sin(θpid)*cos(y); 
+    
+    τpid = r*Fpid*sin(θpid)*cos(y); 
     αdesired = τpid/Ipid;
     αdesired * I(t) = τdesired; 
     τfinal = τdesired - τgravity; 
-    θfinal = arcsin(τfinal/rFcos(y)); 
+    θfinal = arcsin(τfinal/r*thrust(t)*cos(y)); 
     return θfinal;
 }
 //
