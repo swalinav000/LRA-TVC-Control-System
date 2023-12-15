@@ -1,12 +1,10 @@
-# What kind of system are we working with: 
- 1. Non-Linear [linearized system, adjust via inertia stuff
+# Defining the system we're working with:  
+ 1. Non-Linear [linearized system, adjust via inertia stuff]
  2. Minimum Delay 
  3. Closed Loop System
- 4. Requirements: Reduce Windup Error, Cascading PID Control, Variant Subsystem Heirarchy 
-[this last one is mostly to model in simulink, doesnt affect code]
-[raghav's edits in brackets btw-unreliable af-i'll write in psuedo code just to express idea]
-{navya's pseudocode}
-{We NEED to account for redundancy + emergency deployment of parachutes + edge cases}
+ 4. Requirements: Reduce Windup Error, Cascading PID Control, Variant Subsystem Heirarchy [to model in simulink]
+ 5. Define cases
+
 #
 
 # PID Values Calculation:
@@ -14,60 +12,45 @@
   I --> 
   D -->
 [will figure out via the advanced tuning method and/or simulink]
+
 #
 
 # Pre-Launch Requirements
+  [Confirm the following throught the User Interface]
   1. Check Communication with Flight Computer
   2. Check that there is power to all components
-  3. Sensors are fucntioning 
+  3. Sensors are functioning 
   4. Launch Commands cued
-[we put this in the setup part of the code right?
-we just run conditions/check the feedback
-a bunch of if commands that make sure the signal isn't null with each of the sensors?]
-{This part of the code would be more asking all the systems to return data before laucnh/blink the signal lights that indicate that they are in fact working.
-and then we have to write a command sequence for what happens when we give the rocket the green light to go (we have to figure out what real time interfacing 
-with the rocket is going to look like / if we are going to have to design a UI to communicate with the rocket so we can get data on it right before + when we press
-launch + while it's in the air}
+
 #
 
 # Powered Flight
   1. Sensor Feedback: altitude, velocity, acceleration 
-  2. PID Tuning based on wind + other disturbances
-[Variables calculations we need
-*the values from the sensors are gonna be broken down, so it's not at straightforward as calling the value but it still shouldn't be that bad, ez 
-to look up*
-altitude- we take barometer reading and use the equation in notes to convert(only mainly needed for parachute deployment so its not that deep)
-altitude = 44330*[1-(pressure/1013.25)^(1/5.225)
-https://www.youtube.com/watch?v=rabWc5W84ug  - video tutorial
+  2. PID Tuning to account for disturbances affecting flight trajectory
 
-acceleration - straight from imu
-https://randomnerdtutorials.com/arduino-mpu-6050-accelerometer-gyroscope/#:~:text=The%20MPU%2D6050%20measures%20acceleration,and%20pitch%20angles%20using%20trigonometry.
+Altitude --> Take the measurements from BMP 388 
+Arduino Library --> https://github.com/adafruit/Adafruit_BMP3XX
 
-velocity - {shouldn't it be the integral of acceleration ? } derivative of acceleration(can take tiny time steps like 10ms and track a at each value and do += at, each time, effectively doing a
-rieman sum to approximate velocity
-*in the loop every 10 ms
+Acceleration --> Get values from IMU [ MPU 6050 & GY 521 ] 
+Inspiration Tutorial --> https://randomnerdtutorials.com/arduino-mpu-6050-accelerometer-gyroscope/#:~:text=The%20MPU%2D6050%20measures%20acceleration,and%20pitch%20angles%20using%20trigonometry.
+Understanding how the accelerometer works --> https://www.instructables.com/Accelerometer-Gyro-Tutorial/ 
+
+Velocity --> Take the integral of acceleration at timesteps of 10 ms, to approximate velocity using Reimann Sums.  
 v += a*.01
 
-roll - the gyroscope should give the data across 3 axis, one of which will align with the rocket so it should be direct here
-we can measure this by finding roll in the xy plane, gives rotation along z axis, look at diagram in notes for more understanding, math is provided there too
-mind the dthete/dtime
-https://www.youtube.com/watch?v=ythjrfQViRQ
+Roll, Pitch, Yaw --> The gyroscope in the IMU measures angular velocity across these three axis.
+Inspiration Video --> https://www.youtube.com/watch?v=ythjrfQViRQ
+Understanding how the gyroscope works --> https://www.instructables.com/Accelerometer-Gyro-Tutorial/ 
 
-nose cone angle - we'd have to integrate the values we get from gyroscope(like velocity) {Probably going to end up being the Vxz or Vxy value} 
-***we can split this across x and y axis that aligns with our motors so we can process them seperately (seperate PIDs with same code)*** {I'm not sure this would 
-be necessary cause the nose cone angle is the roll value across the x/y axis with respect to the z axis}
+Nose cone angle - Integrate pitch and yaw values to get nose cone angle. We can split this across X and Y axis so we can process them separately for tuning.
 find the overall theta 
-https://www.youtube.com/watch?v=ythjrfQViRQ - should be the yaw and pitch angles. 
-{https://www.instructables.com/Accelerometer-Gyro-Tutorial/ --> this article details how to convert accelerometer and gyro values into something that we 
-can work with. Also depending on the physical position of the gyro and the accelerometer we have to determine if the outputs for the gyro have to be inverted}
-Nose_cone_angle_X = angular_velocity_x* .01 (same with y after)
+Inspiration Video --> https://www.youtube.com/watch?v=ythjrfQViRQ  
+Nose_cone_angle_X += angular_velocity_x* .01 (same with y after)
 
-gimbal angle - this would be what we send to the actuators that gimbal. 
-this is the after affect of the PID controls 
-output from the PI control system to the actuators
-{We need to write code that determine the angle of the nozzle from actuator position -->
-feeds it into PID --> PID outputs angle --> we turn angle into actuator outputs}
-time - i'm assuming the computer alr tracks this? {Most likely --> definitely something I need to look into for Teensy functions}
+Gimbal angle  - This would be what we send to the actuators that control the inner and outer rings of the gimbal. Each ring controls a specific axis along
+which we change the angle of the nozzle. The fraction of one rotation of the servo controls the position of the actuator, and as a result the gimbal's degree
+of rotation. 
+[The angle the Gimbal should point in comes from PID tuning]
 
 Inertia - as a function of time, gotta figure this out before hand 
 Must calculate before hand(looking at burn rate for engine, find burn rate for our engine)
