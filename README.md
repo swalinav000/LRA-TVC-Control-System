@@ -9,6 +9,7 @@ Electronics Used & Their Libraries/Code tutorials:
 - BMP 388 Altimeter : https://github.com/107-systems/107-Arduino-BMP388/tree/main
 - **** Not used anymore, replaced by altimeter **** - BMP 280 Barometer : https://www.arduino.cc/reference/en/libraries/adafruit-bmp280-library/
                       https://forum.pjrc.com/threads/63065-Teensy-4-0-How-to-use-two-I2C-ports-with-two-BMP280-on-same-address
+  https://learn.adafruit.com/adafruit-bmp280-barometric-pressure-plus-temperature-sensor-breakout?view=all
 - MOSFET : https://forum.arduino.cc/t/how-to-use-a-mosfet-as-a-switch-controlled-by-arduino/73999
            https://www.instructables.com/How-to-Control-a-MOSFET-With-Arduino-PWM/
 - SPI Flash Storage : https://github.com/nfd/spi-flash-programmer
