@@ -1,4 +1,4 @@
-// Files to Include 
+2// Files to Include 
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_BMP280.h>
@@ -31,28 +31,29 @@ void setup() {
                       Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */ //averages sixteen pressures
                       Adafruit_BMP280::FILTER_X16,      /* Filtering. */ // sets digital low pass filter to a factor of 16 to reduce noise in sensor readings 
                       Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */ // Sensor enters standby mode of 500 ms before taking new readings 
+    
     //GY521 
     Serial.begin(115200); // REMOVE IF NEEDED
     Wire.begin(); 
     while (sensor.wakeup() == false) 
-    {   
+      {   
         Serial.print(millis());
         Serial.println("\tCould not connect to GY521: please check the GY521 address (0x68/0x69)");
         delay(1000);
       }
-      sensor.setAccelSensitivity(2);  //  8g
-      sensor.setGyroSensitivity(1);   //  500 degrees/s
+    sensor.setAccelSensitivity(2);  //  8g
+    sensor.setGyroSensitivity(1);   //  500 degrees/s
     
-      sensor.setThrottle();
-      Serial.println("start...");
+    sensor.setThrottle();
+    Serial.println("start...");
     
-      //  set calibration values from calibration sketch.
-      sensor.axe = 0.574;
-      sensor.aye = -0.002;
-      sensor.aze = -1.043;
-      sensor.gxe = 10.702;
-      sensor.gye = -6.436;
-      sensor.gze = -0.676;
+    //  set calibration values from calibration sketch.
+    sensor.axe = 0.574;
+    sensor.aye = -0.002;
+    sensor.aze = -1.043;
+    sensor.gxe = 10.702;
+    sensor.gye = -6.436;
+    sensor.gze = -0.676;
 
 }
 
@@ -75,45 +76,41 @@ void loop() {
 
     //GY521
     sensor.read();
-    float x = sensor.getAngleX();
-    float y = sensor.getAngleY();
-    float z = sensor.getAngleZ();
+    float ax = sensor.getAccelX();
+    float ay = sensor.getAccelY();
+    float az = sensor.getAccelZ();
+    float gx = sensor.getGyroX();
+    float gy = sensor.getGyroY();
+    float gz = sensor.getGyroZ();
+    float t = sensor.getTemperature();
     
     if (counter % 10 == 0)
     {
-    //  Serial.println("\nCNT\tX\tY\tZ");
-    }
-    
-    //  Serial.print(counter);
-    //  Serial.print('\t');
-    Serial.print(x, 1);
-    Serial.print('\t');
-    Serial.print(y, 1);
-    Serial.print('\t');
-    Serial.print(z, 1);
-    Serial.println();
-    
-    counter++;
-    
-    float pitch = sensor.getPitch();
-    float roll  = sensor.getRoll();
-    float yaw   = sensor.getYaw();
-    
-    if (counter % 10 == 0)
-    {
-    Serial.println("\nCNT\tPITCH\tROLL\tYAW");
+    Serial.println("\n\tACCELEROMETER\t\tGYROSCOPE\t\tTEMPERATURE");
+    Serial.println("\tax\tay\taz\tgx\tgy\tgz\tT");
     }
     
     Serial.print(counter);
     Serial.print('\t');
-    Serial.print(pitch, 3);
+    Serial.print(ax, 3);
     Serial.print('\t');
-    Serial.print(roll, 3);
+    Serial.print(ay, 3);
     Serial.print('\t');
-    Serial.print(yaw, 3);
+    Serial.print(az, 3);
+    Serial.print('\t');
+    Serial.print(gx, 3);
+    Serial.print('\t');
+    Serial.print(gy, 3);
+    Serial.print('\t');
+    Serial.print(gz, 3);
+    Serial.print('\t');
+    Serial.print(t, 3);
     Serial.println();
     
     counter++;
-}
+    delay(1000);
+
+    
+
 
 } 
