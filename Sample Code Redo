@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_BMP280.h>
+#include "GY521.h"
 
 //Device Inputs Defined
 #define BMP_SCK (*insert pin from KICAD*)
@@ -10,24 +11,109 @@
 #define BMP_CS (*insert pin from KICAD*)
 
 Adafruit_BMP280 bmp; //I2C 
+GY521 sensor(0x68);
+uint32_t counter = 0;
+
 void setup() { 
-Serial.begin(9600) // initializes serial connection at a baud rate of 9600 
-while (!Serial) delay(100); // Waits to establish connection via usb
-unsigned status;
-status = bmp.begin() // initializes the bmp280 sensor and stores the success/fail result
-if (!status) {
-    Serial.println(F("Could  not find valid BMP280 Sensor. Check wiring or try a different address!"));
-    while (1) delay (10); //runs an infinite loop and requires manual reset to break out of the program
-}
-/* Default settings from datasheet. */
-  bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */ // The sensor continuously measures pressure and temperature
-                  Adafruit_BMP280::SAMPLING_X2,     /* Temp. oversampling */ //avergaes two temperatures
-                  Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */ //averages sixteen pressures
-                  Adafruit_BMP280::FILTER_X16,      /* Filtering. */ // sets digital low pass filter to a factor of 16 to reduce noise in sensor readings 
-                  Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */ // Sensor enters standby mode of 500 ms before taking new readings 
+
+    // BMP280
+    Serial.begin(9600) // initializes serial connection at a baud rate of 9600 
+    while (!Serial) delay(100); // Waits to establish connection via usb
+    unsigned status;
+    status = bmp.begin(); // initializes the bmp280 sensor and stores the success/fail result
+    if (!status) {
+        Serial.println(F("Could  not find valid BMP280 Sensor. Check wiring or try a different address!"));
+        while (1) delay (10); //runs an infinite loop and requires manual reset to break out of the program
+    }
+    /* Default settings from datasheet. */
+      bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */ // The sensor continuously measures pressure and temperature
+                      Adafruit_BMP280::SAMPLING_X2,     /* Temp. oversampling */ //avergaes two temperatures
+                      Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */ //averages sixteen pressures
+                      Adafruit_BMP280::FILTER_X16,      /* Filtering. */ // sets digital low pass filter to a factor of 16 to reduce noise in sensor readings 
+                      Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */ // Sensor enters standby mode of 500 ms before taking new readings 
+    //GY521 
+    Serial.begin(115200); // REMOVE IF NEEDED
+    Wire.begin(); 
+    while (sensor.wakeup() == false) 
+    {   
+        Serial.print(millis());
+        Serial.println("\tCould not connect to GY521: please check the GY521 address (0x68/0x69)");
+        delay(1000);
+      }
+      sensor.setAccelSensitivity(2);  //  8g
+      sensor.setGyroSensitivity(1);   //  500 degrees/s
+    
+      sensor.setThrottle();
+      Serial.println("start...");
+    
+      //  set calibration values from calibration sketch.
+      sensor.axe = 0.574;
+      sensor.aye = -0.002;
+      sensor.aze = -1.043;
+      sensor.gxe = 10.702;
+      sensor.gye = -6.436;
+      sensor.gze = -0.676;
+
 }
 
 void loop() {
+    //BMP280
+    Serial.print(F("Temperature = "));
+    Serial.print(bmp.readTemperature());
+    Serial.println(" *C");
 
+    Serial.print(F("Pressure = "));
+    Serial.print(bmp.readPressure());
+    Serial.println(" Pa");
+
+    Serial.print(F("Approx altitude = "));
+    Serial.print(bmp.readAltitude(1013.25)); /* Adjusted to local forecast! */
+    Serial.println(" m");
+
+    Serial.println();
+    delay(2000);
+
+    //GY521
+    sensor.read();
+    float x = sensor.getAngleX();
+    float y = sensor.getAngleY();
+    float z = sensor.getAngleZ();
+    
+    if (counter % 10 == 0)
+    {
+    //  Serial.println("\nCNT\tX\tY\tZ");
+    }
+    
+    //  Serial.print(counter);
+    //  Serial.print('\t');
+    Serial.print(x, 1);
+    Serial.print('\t');
+    Serial.print(y, 1);
+    Serial.print('\t');
+    Serial.print(z, 1);
+    Serial.println();
+    
+    counter++;
+    
+    float pitch = sensor.getPitch();
+    float roll  = sensor.getRoll();
+    float yaw   = sensor.getYaw();
+    
+    if (counter % 10 == 0)
+    {
+    Serial.println("\nCNT\tPITCH\tROLL\tYAW");
+    }
+    
+    Serial.print(counter);
+    Serial.print('\t');
+    Serial.print(pitch, 3);
+    Serial.print('\t');
+    Serial.print(roll, 3);
+    Serial.print('\t');
+    Serial.print(yaw, 3);
+    Serial.println();
+    
+    counter++;
+}
 
 } 
