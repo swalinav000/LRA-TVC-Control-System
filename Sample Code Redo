@@ -14,6 +14,8 @@ Adafruit_BMP280 bmp; //I2C
 GY521 sensor(0x68);
 uint32_t counter = 0;
 
+int time = millis()
+
 void setup() { 
 
     // BMP280
@@ -110,7 +112,61 @@ void loop() {
     counter++;
     delay(1000);
 
+    double Inertia_&_Thrust(time) {
+    //time in ms
+    // check my math on this, I put the base equations in the notes
+    //Inertia_difference is the difference between initial and final inertia
+    //fuel fraction is the integral of the fuel used up, but it's not divided yet
+    //we have to do that at the end which is why it is divided by 961.8 at end
+    t = time/1000;
+    fuel_fraction = 0;
+    thrust = 0; 
+    if t< .125 {
+        fuel_fraction =  166 * pow(t,2)-1300*(pow(t,3)/3+pow(t,2)/8+t/64; 
+        thrust = -1300(t+.125)^2+330+2x;
+    }
+    else if t < 2.125 {
+        fuel_fraction = 1015/4 * t - 15 * pow(t,2) + 3.8567708333;
+        thrust = 250 - 30(x-.125);
+    }
+    else if t < 3.5 {
+        fuel_fraction = 51.271-t⋅(36t−1673)/8;
+        thrust = 290-9(x-2.125);
+    }
+    else if t < 5.4 {
+        fuel_fraction = -322.26 + 2113*t/5−35*pow(t,2);
+        thrust = 177.6-70(x-3.5);
+    }
+    else if t < 6.4 {
+        fuel_fraction = 56.813 + 223*t/5−44(pow(t,2)/2−27*t/5);
+        thrust = 44.6-44(x-5.4);
+    }
+    else {
+        fuel_fraction = 961.8;
+        thrust = 0;
+    }
     
+    current_inertia = Inertia_difference * fuel_fraction/961.8  + Initial_inertia;
+    return current_inertia;
+    return thrust;
+    }
+
+    //Parachute Checking Conditions
+     boolean checkParachute(altitude, velocity, acceleration) {
+     boolean condition = false;
+     if(velocity <= 0 && acceleration <= 20) {
+         condition = true;
+     }
+     else if(altitude < prevaltitude && acceleration <= 20){
+         condition = true;
+     }
+     return condition;
+     }
+
+     if (condition == true) {
+     MOSFET COMMUNICATION
+     }
+
 
 
 } 
