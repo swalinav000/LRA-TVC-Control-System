@@ -1,4 +1,12 @@
-2// Files to Include 
+*TO DO* 
+
+1. Incorporate SD card
+2. ESP2866
+3. SPI Flash 
+4. PID
+5. UI
+
+// Files to Include 
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_BMP280.h>
