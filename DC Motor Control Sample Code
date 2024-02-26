@@ -1,0 +1,40 @@
+//Source: http://www.botsrule.com/pattonrobotics/OneBot_Simple_DC_PWM_4Wire.html
+// How do we determine without testing, which pin corresponds to what?
+//Do we have a motor driver?
+
+byte In1pin = 3;  //Teensy PWM pin
+byte In2pin = 4;  //Teensy PWM pin
+
+void setup() {
+  // put your setup code here, to run once
+  // pins 3,4,5,6 are PWM pins, so if you use different pins, the commands will be different
+  // Trial and errror to determine which low high combination makes it go forwards vs backwards
+  pinMode(In1pin, OUTPUT);   // Set pin to Output
+  pinMode(In2pin, OUTPUT);   // Set pin to Output
+
+void forward(int dly, int pwm_s) {
+  // int pwm_s is the pulse width modulation signal that controls how fast the motors are spinning
+  digitalWrite(In1pin, LOW);
+  digitalWrite(In2pin, HIGH);
+  delay(10);
+  digitalWrite(In1pin, LOW);
+  analogWrite(In2pin, pwm_s);
+  delay(dly)
+
+void backwards(int dly, int pwm_s){
+  digitalWrite(In1pin, HIGH);
+  digitalWrite(In2pin, LOW);
+  delay(10);
+  digitalWrite(In1pin, HIGH);
+  analogWrite(In2pin, pwm_s);
+  delay(dly)
+
+void loop() {
+  for (int i = 60; i <= 254; i += 5) {
+    forward(200, i);
+  }
+  for (int i = 254; i >= 60; i-= 5) {
+    forward(200, i);
+  }
+
+
