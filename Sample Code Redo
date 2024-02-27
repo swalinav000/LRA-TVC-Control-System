@@ -24,6 +24,12 @@ uint32_t counter = 0;
 
 int time = millis()
 
+//define output pins to mosfet using https://dronebotworkshop.com/transistors-mosfets/
+int pin1 = ;
+int pin2 = ; 
+int pin3 = ; 
+//initialize them as pinmode(pin1, OUTPUT) in setup. AnalogWrite(pin1, command) to MOSFET
+
 void setup() { 
 
     // BMP280
